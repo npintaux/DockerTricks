@@ -5,10 +5,11 @@
 Param(
   [switch] $SkipEngineUpgrade,
   [string] $ArtifactPath = ".",
-  [string] $DockerEngineURI = "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-5.zip",
+  [string] $DockerEngineURI = "https://download.docker.com/components/engine/windows-server/17.06/docker-17.06.2-ee-6.zip",
   [string] $USERNAME,
   [string] $PASSWORD,
   [string] $UCPURI,
+  [string] $DTRURI,
   [string] $SWARMMGRIP
 )
 
@@ -16,6 +17,7 @@ Param(
 $Date = Get-Date -Format "yyyy-MM-dd HHmmss"
 $DockerPath = "C:\Program Files\Docker"
 $DockerDataPath = "C:\ProgramData\Docker"
+$UserDesktopPath = "C:\Users\Default\Desktop"
 
 
 function Install-LatestDockerEngine () {
@@ -80,19 +82,55 @@ function Join-Swarm ()
 
 }
 
+
+function Customize-User-Desktop ()
+{
+#    Install-Module Image2Docker -Force
+#    Import-Module Image2Docker -Force
+
+    # Download the DTR certificate to install it and trust it (to allow docker login commands)
+
+    [Net.ServicePointManager]::ServerCertificateValidationCallback = {$true}
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+    $webClient = new-object System.Net.WebClient
+    $webClient.DownloadFile( "https://$DTRURI/ca", "$UserDesktopPath\dtrca.crt" )
+
+    Import-Certificate "$UserDesktopPath\dtrca.crt" -CertStoreLocation Cert:\LocalMachine\AuthRoot
+
+    # Copy some additionnal files in the user desktop
+
+    Copy-Item ".\copy_certs.ps1" "$UserDesktopPath\copy_certs.ps1" -Force
+    Copy-Item ".\MTA-Commands.txt" "$UserDesktopPath\MTA-Commands.txt" -Force
+
+#    Move-Item ".\ws2016.vhd" "$UserDesktopPath\ws2016.vhd" -Force
+}
+
+
 function Install-Keyboards ()
 {
-     Expand-Archive -Path keyboard-french-mac.zip -Force
-     Start-Process -FilePath ".\keyboard-french-mac\setup.exe" -ArgumentList "/a"
+     New-Item -Path "$UserDesktopPath\keyboard-french-mac" -ItemType Directory -Force
+     Expand-Archive -Path keyboard-french-mac.zip -DestinationPath "$UserDesktopPath\keyboard-french-mac" -Force
+     Start-Process -FilePath "$UserDesktopPath\keyboard-french-mac\setup.exe" -ArgumentList "/a"
 }
 
 
 #Start Script
 
 $ErrorActionPreference = "Stop"
+
 try
 {
-    Start-Transcript -path "C:\ProgramData\Docker\configure-worker $Date.log" -append
+    Start-Transcript -path "$UserDesktopPath\configure-worker $Date.log" -append
+
+    Set-ExecutionPolicy Unrestricted -Force
+
+    Write-Host "ArtifactPath = $ArtifactPath"
+    Write-Host "DockerEngineURI = $DockerEngineURI"
+    Write-Host "USERNAME = $USERNAME"
+    Write-Host "UCPURI = $UCPURI"
+    Write-Host "DTRURI = $DTRURI"
+    Write-Host "SWARMMGRIP = $SWARMMGRIP"
 
     Write-Host "Install additional Keyboards"
     Install-Keyboards
@@ -102,6 +140,9 @@ try
 
     Write-Host "Join the Swarm cluster"
     Join-Swarm
+
+    Write-Host "Customize the user desktop"
+    Customize-User-Desktop
 
     Stop-Transcript
 }

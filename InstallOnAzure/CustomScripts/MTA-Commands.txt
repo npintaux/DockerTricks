@@ -1,0 +1,13 @@
+VHD
+
+https://drive.google.com/uc?export=download&id=0ByQd4O58ibOES0VCbjNxTTk5LUU
+
+
+docker images
+  ConvertTo-Dockerfile -ImagePath .\ws2016.vhd -Artifact IIS -OutputPath .\windowsapp -Verbose
+  docker build -t dtrdockercluster.westeurope.cloudapp.azure.com/docker/windows_tweet_app .
+  docker login dtrdockercluster.westeurope.cloudapp.azure.com
+  docker push dtrdockercluster.westeurope.cloudapp.azure.com/docker/windows_tweet_app
+
+  8082
+  Import-Certificate c:\ca.crt -CertStoreLocation Cert:\LocalMachine\AuthRoot

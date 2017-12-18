@@ -33,8 +33,8 @@ docker run --rm docker/dtr install \
       --ucp-username $UCP_ADMIN_USERID \
       --ucp-password $UCP_ADMIN_PASSWORD \
       --ucp-insecure-tls \
-#      --replica-https-port 445 \
-#      --replica-http-port 85 \
+#      --replica-https-port 444 \
+#      --replica-http-port 84 \
       --debug
 
 echo $(date) " linux-install-dtr - End of Script"
