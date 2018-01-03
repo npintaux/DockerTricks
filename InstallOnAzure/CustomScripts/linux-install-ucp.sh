@@ -18,6 +18,9 @@ echo "UCP_PUBLIC_FQDN=$UCP_PUBLIC_FQDN"
 echo "UCP_ADMIN_USERID=$UCP_ADMIN_USERID"
 echo "UCP_ADMIN_PASSWORD=<Not Copied for obvious security reasons"
 echo "DDC_LICENSE=$LICENSE"
+echo "AZURE_STORAGE_ACCOUNT=$AZURE_STORAGE_ACCOUNT_NAME"
+echo "AZURE_STORAGE_ACCOUNT_KEY=$AZURE_STORAGE_ACCOUNT_KEY"
+
 
 #eval HOST_IP_ADDRESS=$(ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*')
 #echo "HOST_IP_ADDRESS=$HOST_IP_ADDRESS"
@@ -35,7 +38,7 @@ fi
 echo "UCP_SAN=$UCP_SAN"
 echo "UCP_PORT=$UCP_PORT"
 
-# Installs UCP
+# Install UCP
 
 docker run --rm -i --name ucp \
     -v /var/run/docker.sock:/var/run/docker.sock \
@@ -49,5 +52,14 @@ docker run --rm -i --name ucp \
     --admin-password $UCP_ADMIN_PASSWORD \
     --debug
 
+# Add the Azure Storage Volume Driver
+
+docker plugin install --alias cloudstor:azure \
+  --grant-all-permissions docker4x/cloudstor:17.06.1-ce-azure1  \
+  CLOUD_PLATFORM=AZURE \
+  AZURE_STORAGE_ACCOUNT_KEY=$AZURE_STORAGE_ACCOUNT_KEY \
+  AZURE_STORAGE_ACCOUNT=$AZURE_STORAGE_ACCOUNT_NAME \
+  AZURE_STORAGE_ENDPOINT="core.windows.net" \
+  DEBUG=1
 
 echo $(date) " linux-install-ucp - End of Script"

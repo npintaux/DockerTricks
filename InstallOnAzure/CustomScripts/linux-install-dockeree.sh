@@ -22,17 +22,27 @@ echo "HOST_IP_ADDRESS=$HOST_IP_ADDRESS"
 
 install_docker()
 {
-echo ${DOCKEREE_DOWNLOAD_URL}"/centos" > /etc/yum/vars/dockerurl
 
-yum install -y yum-utils device-mapper-persistent-data lvm2
+# CENTOS
 
-yum-config-manager \
-    --add-repo \
-    ${DOCKEREE_DOWNLOAD_URL}/centos/docker-ee.repo
+# echo ${DOCKEREE_DOWNLOAD_URL}"/centos" > /etc/yum/vars/dockerurl
+# yum install -y yum-utils device-mapper-persistent-data lvm2
+# yum-config-manager \
+#    --add-repo \
+#    ${DOCKEREE_DOWNLOAD_URL}/centos/docker-ee.repo
 
-yum makecache fast
+# yum makecache fast
+# yum install -y docker-ee
 
-yum install -y docker-ee
+# UBUNTU
+
+sudo apt-get install -y apt-transport-https curl software-properties-common
+curl -fsSL ${DOCKEREE_DOWNLOAD_URL}/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] ${DOCKEREE_DOWNLOAD_URL}/ubuntu $(lsb_release -cs) stable-17.06"
+sudo apt-get update -y
+sudo apt-get install -y docker-ee
+
+# Post Installation configuration (all Linux distros)
 
 groupadd docker
 usermod -aG docker $USER

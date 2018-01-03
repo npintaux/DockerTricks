@@ -19,8 +19,14 @@ echo "UCP_ADMIN_PASSWORD=<Not Copied for obvious security reasons"
 
 # wget http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/j/jq-1.5-1.el7.x86_64.rpm
 
-yum install -y epel-release
-yum install -y jq-1.5-1.el7.x86_64.rpm
+# CENTOS
+
+#yum install -y epel-release
+#yum install -y jq-1.5-1.el7.x86_64.rpm
+
+# UBUNTU
+
+apt-get install jq unzip -y
 
 # Retrieve and extract the Auth Token for the current user
 

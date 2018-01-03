@@ -26,20 +26,13 @@
         },
         "managerVMSize": {
             "type": "string",
-            "defaultValue": "Standard_A4_v2",
+            "defaultValue": "Standard_D4s_v3",
             "allowedValues": [
-                "Basic_A0", "Basic_A1", "Basic_A2", "Basic_A3", "Basic_A4",
-                "Standard_A1_v2", "Standard_A2_v2", "Standard_A4_v2", "Standard_A8_v2",
-                "Standard_A0", "Standard_A1", "Standard_A2", "Standard_A3", "Standard_A4", "Standard_A5",
-                "Standard_A6", "Standard_A7", "Standard_A8", "Standard_A9", "Standard_A10", "Standard_A11",
-                "Standard_D1", "Standard_D2", "Standard_D3", "Standard_D4",
-                "Standard_D11", "Standard_D12", "Standard_D13", "Standard_D14",
-                "Standard_D1_v2", "Standard_D2_v2", "Standard_D3_v2", "Standard_D4_v2", "Standard_D5_v2",
-                "Standard_D11_v2", "Standard_D12_v2", "Standard_D13_v2", "Standard_D14_v2",
-                "Standard_G1", "Standard_G2", "Standard_G3", "Standard_G4", "Standard_G5",
-                "Standard_DS1", "Standard_DS2", "Standard_DS3", "Standard_DS4",
-                "Standard_DS11", "Standard_DS12", "Standard_DS13", "Standard_DS14",
-                "Standard_GS1", "Standard_GS2", "Standard_GS3", "Standard_GS4", "Standard_GS5"
+                "Standard_D2s_v3", "Standard_D4s_v3",
+                "Standard_B2ms", "Standard_B4ms", "Standard_D8s_v3",
+                "Standard_A2_v2", "Standard_A4_v2",
+                "Standard_D2_v3", "Standard_D4_v3", "Standard_D8_v3",
+                "Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3"
             ],
             "metadata": {
                 "description": "The size of the created Manager machines"
@@ -47,20 +40,13 @@
         },
                 "workerVMSize": {
                     "type": "string",
-                    "defaultValue": "Standard_A4_v2",
+                    "defaultValue": "Standard_B4ms",
                     "allowedValues": [
-                        "Basic_A0", "Basic_A1", "Basic_A2", "Basic_A3", "Basic_A4",
-                        "Standard_A1_v2", "Standard_A2_v2", "Standard_A4_v2", "Standard_A8_v2",
-                        "Standard_A0", "Standard_A1", "Standard_A2", "Standard_A3", "Standard_A4", "Standard_A5",
-                        "Standard_A6", "Standard_A7", "Standard_A8", "Standard_A9", "Standard_A10", "Standard_A11",
-                        "Standard_D1", "Standard_D2", "Standard_D3", "Standard_D4",
-                        "Standard_D11", "Standard_D12", "Standard_D13", "Standard_D14",
-                        "Standard_D1_v2", "Standard_D2_v2", "Standard_D3_v2", "Standard_D4_v2", "Standard_D5_v2",
-                        "Standard_D11_v2", "Standard_D12_v2", "Standard_D13_v2", "Standard_D14_v2",
-                        "Standard_G1", "Standard_G2", "Standard_G3", "Standard_G4", "Standard_G5",
-                        "Standard_DS1", "Standard_DS2", "Standard_DS3", "Standard_DS4",
-                        "Standard_DS11", "Standard_DS12", "Standard_DS13", "Standard_DS14",
-                        "Standard_GS1", "Standard_GS2", "Standard_GS3", "Standard_GS4", "Standard_GS5"
+                      "Standard_D2s_v3", "Standard_D4s_v3",
+                      "Standard_B2ms", "Standard_B4ms", "Standard_D8s_v3",
+                      "Standard_A2_v2", "Standard_A4_v2",
+                      "Standard_D2_v3", "Standard_D4_v3", "Standard_D8_v3",
+                      "Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3"
                     ],
                     "metadata": {
                         "description": "The size of the worker machines"
@@ -83,7 +69,6 @@
 
         "dockerEEDownloadURL": {
              "type": "string",
-             "defaultValue": "https://storebits.docker.com/ee/linux/yourdownloadurl",
              "metadata": {
                    "description": "Location from where to Download Docker EE (Found in Docker Store)"
                          }
@@ -97,14 +82,12 @@
         },
     "customScriptStorageAccountName": {
       "type": "string",
-      "defaultValue": "yourazureaccountname",
       "metadata": {
         "description": "The name of storage account where scripts are stored into the dockerinstall container"
       }
     },
     "customScriptStorageAccountKey": {
       "type": "string",
-      "defaultValue": "yourstorageaccoutkey",
       "metadata": {
         "description": "The access key of the storage account."
       }
@@ -112,15 +95,15 @@
     },
     "variables": {
 
+       "resourceGroupLocation": "[resourceGroup().location]",
+
         "artifactBaseUri": "[concat('https://',parameters('customScriptStorageAccountName'),'.blob.core.windows.net/dockerinstall/')]",
         "dockerEEDownloadURL": "[parameters('dockerEEDownloadURL')]",
 
         "accountID": "[subscription().subscriptionId]",
         "apiVersion": "2016-03-30",
 
-        "storageLocation": "[resourceGroup().location]",
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
-        "vhdContainerName": "dockervmvhds",
 
         "virtualNetworkName": "clusterVirtualNetwork",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
@@ -178,23 +161,34 @@
 
     "resources": [
 
-            {
-        "comments": "Storage Account for the VMs",
-        "apiVersion": "2015-06-15",
-        "type": "Microsoft.Storage/storageAccounts",
-        "name": "[variables('storageAccountName')]",
-        "location": "[variables('storageLocation')]",
-        "properties": {
-            "accountType": "Standard_LRS"
-        }
-      },
+      {
+                  "apiVersion": "2017-10-01",
+                  "name": "[variables('storageAccountName')]",
+                  "location": "[variables('resourceGroupLocation')]",
+                  "type": "Microsoft.Storage/storageAccounts",
+                  "sku": { "name": "Standard_LRS" },
+                  "kind": "StorageV2",
+                  "properties": {
+                      "supportsHttpsTrafficOnly": "false",
+                      "accessTier": "Hot",
+                      "encryption": {
+                          "services": {
+                              "blob": { "enabled": true },
+                              "file": { "enabled": true }
+                          },
+                          "keySource": "Microsoft.Storage"
+                      }
+                  },
+                  "dependsOn": []
+              },
+
 
       {
         "comments": "Cluster Virtual Network",
         "apiVersion": "[variables('apiVersion')]",
         "type": "Microsoft.Network/virtualNetworks",
         "name": "[variables('virtualNetworkName')]",
-        "location": "[variables('storageLocation')]",
+        "location": "[variables('resourceGroupLocation')]",
         "properties":
             {
             "addressSpace": {
@@ -232,13 +226,14 @@
 
 {
     "comments": "UCP Availability Set",
+    "apiVersion": "2017-03-30",
     "type": "Microsoft.Compute/availabilitySets",
     "sku": {
-        "name": "Classic"
+        "name": "Aligned"
     },
     "name": "[variables('ucpAvailabilitySetName')]",
     "apiVersion": "2016-04-30-preview",
-    "location": "[variables('storageLocation')]",
+    "location": "[variables('resourceGroupLocation')]",
     "tags": {},
     "scale": null,
     "properties":
@@ -248,12 +243,11 @@
         }
 },
 
-
 {
           "comments": "UCP Public IP address",
           "type": "Microsoft.Network/publicIPAddresses",
           "name": "[variables('ucpPublicIPAddressName')]",
-          "location": "[variables('storageLocation')]",
+          "location": "[variables('resourceGroupLocation')]",
           "apiVersion": "2017-03-01",
           "scale": null,
           "properties": {
@@ -341,7 +335,7 @@
   "apiVersion": "[variables('apiVersion')]",
   "type": "Microsoft.Network/networkInterfaces",
   "name": "[variables('ucpNicName')]",
-  "location": "[variables('storageLocation')]",
+  "location": "[variables('resourceGroupLocation')]",
   "dependsOn": [
       "[variables('vnetID')]",
       "[variables('ucpLbID')]"
@@ -373,9 +367,9 @@
 
  {
               "comments": "UCP Virtual Machine",
+              "apiVersion": "2016-04-30-preview",
               "type": "Microsoft.Compute/virtualMachines",
               "name": "ucpManager",
-              "apiVersion": "2016-04-30-preview",
               "location": "[resourceGroup().location]",
               "scale": null,
               "properties": {
@@ -387,19 +381,19 @@
                   },
                   "storageProfile": {
                       "imageReference": {
-                          "publisher": "OpenLogic",
-                          "offer": "CentOS",
-                          "sku": "7.3",
+                          "publisher": "Canonical",
+                          "offer": "UbuntuServer",
+                          "sku": "16.04-LTS",
                           "version": "latest"
                       },
                       "osDisk": {
                           "osType": "Linux",
                           "name": "ucpmanager-osdisk",
                           "createOption": "FromImage",
-                          "vhd": {
-                              "uri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/', variables('vhdContainerName'), '/ucp.vhd')]"
-                          },
-                          "caching": "ReadWrite"
+                          "caching": "ReadWrite",
+                          "managedDisk": {
+                              "storageAccountType": "Premium_LRS"
+                          }
                       },
                       "dataDisks": []
                   },
@@ -427,12 +421,11 @@
                   "diagnosticsProfile": {
                       "bootDiagnostics": {
                           "enabled": true,
-                          "storageUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/')]"
+                          "storageUri": "https://automateclouddiag.blob.core.windows.net/"
                       }
                   }
               },
               "dependsOn": [
-                  "[variables('storageAccountName')]",
                   "[resourceId('Microsoft.Network/networkInterfaces',variables('ucpNicName'))]"
               ]
     },
@@ -442,7 +435,9 @@
         "name": "ucpManager/ucpInstallation",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-06-15",
-        "dependsOn": ["Microsoft.Compute/virtualMachines/ucpManager"],
+        "dependsOn": ["Microsoft.Compute/virtualMachines/ucpManager",
+                      "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+                     ],
         "properties": {
             "publisher": "Microsoft.Azure.Extensions",
             "type": "CustomScript",
@@ -454,7 +449,8 @@
               "[concat(variables('artifactBaseUri'), 'linux-install-ucp.sh')]",
               "[concat(variables('artifactBaseUri'), 'docker_subscription.lic')]"
             ],
-            "commandToExecute": "[concat('export UCP_PUBLIC_FQDN=', variables('ucpuri'), '; export CLUSTER_SAN=', variables('clusterUri'), '; export DTR_PUBLIC_FQDN=', variables('dtruri'), '; export UCP_ADMIN_USERID=', variables('AdminUserid'), '; export UCP_ADMIN_PASSWORD=', variables('AdminPassword'), ';export DOCKEREE_DOWNLOAD_URL=', variables('dockerEEDownloadURL'), '; ./linux-install-dockeree.sh; ./linux-install-ucp.sh;')]"
+
+            "commandToExecute": "[concat('export AZURE_STORAGE_ACCOUNT_NAME=', variables('storageAccountName'), '; export AZURE_STORAGE_ACCOUNT_KEY=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, '; export UCP_PUBLIC_FQDN=', variables('ucpuri'), '; export CLUSTER_SAN=', variables('clusterUri'), '; export DTR_PUBLIC_FQDN=', variables('dtruri'), '; export UCP_ADMIN_USERID=', variables('AdminUserid'), '; export UCP_ADMIN_PASSWORD=', variables('AdminPassword'), ';export DOCKEREE_DOWNLOAD_URL=', variables('dockerEEDownloadURL'), '; ./linux-install-dockeree.sh; ./linux-install-ucp.sh;')]"
           },
         "protectedSettings": {
           "storageAccountName": "[parameters('customScriptStorageAccountName')]",
@@ -464,16 +460,16 @@
     },
 
 
-
     {
         "comments": "DTR Availability Set",
+        "apiVersion": "2017-03-30",
         "type": "Microsoft.Compute/availabilitySets",
         "sku": {
-            "name": "Classic"
+            "name": "Aligned"
         },
         "name": "[variables('dtrAvailabilitySetName')]",
         "apiVersion": "2016-04-30-preview",
-        "location": "[variables('storageLocation')]",
+        "location": "[variables('resourceGroupLocation')]",
         "tags": {},
         "scale": null,
         "properties":
@@ -488,7 +484,7 @@
               "comments": "DTR Public IP address",
               "type": "Microsoft.Network/publicIPAddresses",
               "name": "[variables('dtrPublicIPAddressName')]",
-              "location": "[variables('storageLocation')]",
+              "location": "[variables('resourceGroupLocation')]",
               "apiVersion": "2017-03-01",
               "scale": null,
               "properties": {
@@ -576,7 +572,7 @@
   "apiVersion": "[variables('apiVersion')]",
   "type": "Microsoft.Network/networkInterfaces",
   "name": "[variables('dtrNicName')]",
-  "location": "[variables('storageLocation')]",
+  "location": "[variables('resourceGroupLocation')]",
   "dependsOn": [
       "[variables('vnetID')]",
       "[variables('dtrLbID')]"
@@ -623,19 +619,18 @@
                   },
                   "storageProfile": {
                       "imageReference": {
-                          "publisher": "OpenLogic",
-                          "offer": "CentOS",
-                          "sku": "7.3",
-                          "version": "latest"
-                      },
+                        "publisher": "Canonical",
+                        "offer": "UbuntuServer",
+                        "sku": "16.04-LTS",
+                        "version": "latest"                      },
                       "osDisk": {
                           "osType": "Linux",
                           "name": "dtrmanager-osdisk",
                           "createOption": "FromImage",
-                          "vhd": {
-                              "uri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/', variables('vhdContainerName'), '/dtr.vhd')]"
-                          },
-                          "caching": "ReadWrite"
+                          "caching": "ReadWrite",
+                          "managedDisk": {
+                              "storageAccountType": "Premium_LRS"
+                            }
                       },
                       "dataDisks": []
                   },
@@ -663,19 +658,18 @@
                   "diagnosticsProfile": {
                       "bootDiagnostics": {
                           "enabled": true,
-                          "storageUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/')]"
+                          "storageUri": "https://automateclouddiag.blob.core.windows.net/"
                       }
                   }
               },
               "dependsOn": [
-                  "[variables('storageAccountName')]",
                   "[resourceId('Microsoft.Network/networkInterfaces',variables('dtrNicName'))]"
               ]
     },
 
     {
         "type": "Microsoft.Compute/virtualMachines/extensions",
-        "name": "dtrManager/scriptextension",
+        "name": "dtrManager/dtrInstallation",
         "location": "[resourceGroup().location]",
         "apiVersion": "2015-06-15",
         "dependsOn": [
@@ -704,16 +698,16 @@
     },
 
 
-
     {
-        "comments": "UCP Availability Set",
+        "comments": "Cluster Availability Set",
+        "apiVersion": "2017-03-30",
         "type": "Microsoft.Compute/availabilitySets",
         "sku": {
-            "name": "Classic"
+            "name": "Aligned"
         },
         "name": "[variables('clusterAvailabilitySetName')]",
         "apiVersion": "2016-04-30-preview",
-        "location": "[variables('storageLocation')]",
+        "location": "[variables('resourceGroupLocation')]",
         "tags": {},
         "scale": null,
         "properties":
@@ -728,7 +722,7 @@
               "comments": "Public IP address of the cluster",
               "type": "Microsoft.Network/publicIPAddresses",
               "name": "[variables('clusterLbPublicIPAddressName')]",
-              "location": "[variables('storageLocation')]",
+              "location": "[variables('resourceGroupLocation')]",
               "apiVersion": "2017-03-01",
               "scale": null,
               "properties": {
@@ -800,7 +794,7 @@
                               "properties": {
                                   "frontendIPConfiguration": { "id": "[variables('clusterLbFrontEndIPConfigID')]" },
                                   "frontendPort": 443,
-                                  "backendPort": 443,
+                                  "backendPort": 8443,
                                   "enableFloatingIP": false,
                                   "idleTimeoutInMinutes": 4,
                                   "protocol": "Tcp",
@@ -866,6 +860,20 @@
                               }
                           },
                           {
+                              "name": "TCP-8088",
+                              "properties": {
+                                  "frontendIPConfiguration": { "id": "[variables('clusterLbFrontEndIPConfigID')]" },
+                                  "frontendPort": 8088,
+                                  "backendPort": 8088,
+                                  "enableFloatingIP": false,
+                                  "idleTimeoutInMinutes": 4,
+                                  "protocol": "Tcp",
+                                  "loadDistribution": "Default",
+                                  "backendAddressPool": { "id": "[variables('clusterLbBackendAddressPoolID')]" },
+                                  "probe": { "id": "[variables('clusterLbProbeID')]" }
+                              }
+                          },
+                          {
                               "name": "GRAFANA-3000",
                               "properties": {
                                   "frontendIPConfiguration": { "id": "[variables('clusterLbFrontEndIPConfigID')]" },
@@ -910,6 +918,18 @@
                       ],
 
                       "inboundNatRules": [
+                        {
+                          "name": "Direct-To-8082",
+                          "properties": {
+                            "frontendIPConfiguration": {
+                              "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('clusterLbName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+                            },
+                            "protocol": "tcp",
+                            "frontendPort": 8082,
+                            "backendPort": 8082,
+                            "enableFloatingIP": false
+                          }
+                        },
                         {
                           "name": "rdstowin1",
                           "properties": {
@@ -981,7 +1001,7 @@
         "apiVersion": "[variables('apiVersion')]",
         "type": "Microsoft.Network/networkInterfaces",
         "name": "[concat(variables('linuxWorkerVMNamePrefix'), copyIndex(1), 'NIC')]",
-        "location": "[variables('storageLocation')]",
+        "location": "[variables('resourceGroupLocation')]",
         "copy": {
             "name": "nicLoopNode",
             "count": "[variables('linuxWorkerCount')]"
@@ -1029,19 +1049,18 @@
                       },
                       "storageProfile": {
                           "imageReference": {
-                              "publisher": "OpenLogic",
-                              "offer": "CentOS",
-                              "sku": "7.3",
-                              "version": "latest"
-                          },
+                            "publisher": "Canonical",
+                            "offer": "UbuntuServer",
+                            "sku": "16.04-LTS",
+                            "version": "latest"                          },
                           "osDisk": {
                               "osType": "Linux",
                               "name": "[concat(variables('linuxWorkerVMNamePrefix'), copyIndex(1),'-osdisk')]",
                               "createOption": "FromImage",
-                              "vhd": {
-                                  "uri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/', variables('vhdContainerName'),'/',variables('linuxWorkerVMNamePrefix'), copyIndex(1) ,'.vhd')]"
-                              },
-                              "caching": "ReadWrite"
+                              "caching": "ReadWrite",
+                              "managedDisk": {
+                                  "storageAccountType": "Premium_LRS"
+                              }
                           },
                           "dataDisks": []
                       },
@@ -1069,12 +1088,11 @@
                       "diagnosticsProfile": {
                           "bootDiagnostics": {
                               "enabled": true,
-                              "storageUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/')]"
+                              "storageUri": "https://automateclouddiag.blob.core.windows.net/"
                           }
                       }
                   },
                   "dependsOn": [
-                      "[variables('storageAccountName')]",
                       "[concat('Microsoft.Network/networkInterfaces/', variables('linuxWorkerVMNamePrefix'), copyIndex(1), 'NIC')]"
                   ]
         },
@@ -1119,7 +1137,7 @@
                 "apiVersion": "[variables('apiVersion')]",
                 "type": "Microsoft.Network/networkInterfaces",
                 "name": "[concat(variables('windowsWorkerVMNamePrefix'), copyIndex(1),'NIC')]",
-                "location": "[variables('storageLocation')]",
+                "location": "[variables('resourceGroupLocation')]",
                 "copy": {
                     "name": "nicLoopNode",
                     "count": "[variables('windowsWorkerCount')]"
@@ -1182,10 +1200,10 @@
                                   "osType": "Windows",
                                   "name": "[concat(variables('windowsWorkerVMNamePrefix'), copyIndex(1),'-osdisk')]",
                                   "createOption": "FromImage",
-                                  "vhd": {
-                                      "uri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net/', variables('vhdContainerName'),'/',variables('windowsWorkerVMNamePrefix'), copyIndex(1) ,'.vhd')]"
-                                  },
-                                  "caching": "ReadWrite"
+                                  "caching": "ReadWrite",
+                                  "managedDisk": {
+                                      "storageAccountType": "Premium_LRS"
+                                  }
                               },
                               "dataDisks": []
                           },
@@ -1208,13 +1226,12 @@
                           "diagnosticsProfile": {
                               "bootDiagnostics": {
                                   "enabled": true,
-                                  "storageUri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', '/')]"
+                                  "storageUri": "https://automateclouddiag.blob.core.windows.net/"
                               }
                           }
                       },
                       "dependsOn":
                           [
-                          "[variables('storageAccountName')]",
                           "[concat('Microsoft.Network/networkInterfaces/', variables('windowsWorkerVMNamePrefix'), copyIndex(1), 'NIC')]"
                       ]
                     },
@@ -1230,7 +1247,8 @@
                         "location": "[resourceGroup().location]",
                         "dependsOn": [
                           "[concat('Microsoft.Compute/virtualMachines/', concat(variables('windowsWorkerVMNamePrefix'), copyIndex(1)))]",
-                          "Microsoft.Compute/virtualMachines/ucpManager/extensions/ucpInstallation"
+                          "Microsoft.Compute/virtualMachines/ucpManager/extensions/ucpInstallation",
+                          "Microsoft.Compute/virtualMachines/dtrManager/extensions/dtrInstallation"
                         ],
                         "properties": {
                           "publisher": "Microsoft.Compute",
@@ -1240,9 +1258,11 @@
                           "settings": {
                               "fileUris": [
                                 "[concat(variables('artifactBaseUri'), 'keyboard-french-mac.zip')]",
-                                "[concat(variables('artifactBaseUri'), 'windows-install-join-worker.ps1')]"
+                                "[concat(variables('artifactBaseUri'), 'windows-install-join-worker.ps1')]",
+                                "[concat(variables('artifactBaseUri'), 'copy_certs.ps1')]",
+                                "[concat(variables('artifactBaseUri'), 'MTA-Commands.txt')]"
                               ],
-                              "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File windows-install-join-worker.ps1 -USERNAME ', variables('AdminUserid'), ' -PASSWORD ', variables('AdminPassword'), ' -UCPURI ',variables('ucpUri'), ' -SWARMMGRIP ', variables('swarmMgrIP'))]"
+                              "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File windows-install-join-worker.ps1 -USERNAME ', variables('AdminUserid'), ' -PASSWORD ', variables('AdminPassword'), ' -UCPURI ',variables('ucpUri'), ' -DTRURI ', variables('dtruri'), ' -SWARMMGRIP ', variables('swarmMgrIP'))]"
                           },
                         "protectedSettings": {
                           "storageAccountName": "[parameters('customScriptStorageAccountName')]",
