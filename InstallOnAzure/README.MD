@@ -29,23 +29,28 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 * To install Docker EE, you will need a link to the download image as well as a license key. These can be found on the Docker web site once you sign up for a 1-month trial. In order to do so, follow the instructions below:
 
     * Navigate to Docker trial page: https://store.docker.com/editions/enterprise/docker-ee-trial. Click on the "Start 1-Month Trial" button.
+
     ![Screen capture](images/DockerEE_Start_a_trial.png?raw=true)
 
     * Follow the registration process to enroll in the trial. The following page should then appear.
+
     ![Screen capture](images/DockerEE_Download_license_and_url.png?raw=true)
 
     * Download the license key, and copy the software download URL for later use.
 
 * Create a storage account to store the custom scripts
     * Go to the Azure market place, and search for 'storage'. Select "storage account - blob, file, table, queue".
+
     ![Screen capture](images/DockerEE_create_storage_account.png?raw=true)
 
     * Provide a unique name (in lower case) and select/create a resource group. You can keep the other settings as default. Click on "Create".
 
     * Once your storage account is created, click on "Blobs".
+
     ![Screen capture](images/DockerEE_create_container.png?raw=true)
 
     * Create a container and name it "dockerinstall" (all lower case).
+
     ![Screen capture](images/DockerEE_dockerinstall.png?raw=true)
 
 * Use "Azure Storage Explorer" tool to upload the custom scripts (located in the CustomScripts folder in this repository) in the "dockerinstall" container.
@@ -57,23 +62,27 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 * create a storage account to store the logs and diagnostics. Mark down the name of this storage account as you will need it to modify your template.
 
 * Last, you will need to provision a SSH key corresponding to a specific DNS name and admin. To do this, open a Linux shell, and type the following command:
-
-    ssh-keygen -t rsa -b 2048 -C "<admin name>@<dnsname>"
-
+    ```
+    ssh-keygen -t rsa -b 2048 -C "admin_name@your_dnsname_name"
+    ```
     Mark down the admin name, as well as the DNS name you have chosen.
     Copy the public key by retrieving the content of ~/.ssh/id_rsa.pub.
 
 ## Installing Docker EE in Azure
 * The easiest way yo deploy this template, once the custom scripts are available and accessibe somewhere, is to use the Azure portal and search for "Template Deployment" in the MarketPlace. Click on "Create".
+
 ![Screen capture](images/DockerEE_Template_Deployment.png?raw=true)
 
-Then select "Build your own template".
+    Then select "Build your own template".
+
 ![Screen capture](images/DockerEE_Build_Template.png?raw=true)
 
 * Click on "Load File", and select the "StephW-DockerInfra-Azure-Share.json". In the editor, you will need to replace the "automateclouddiag" string (CTRL+F to search in the editor) with the name of the storage account your created for logs and diagnostics.
+
 ![Screen capture](images/DockerEE_Modify_Template.png?raw=true)
 
 * Click on "Save". You should obtain the following screen.
+
 ![Screen capture](images/DockerEE_Customized_Template.png?raw=true)
 
     * __Cluster Public IP Address label__: name of the DNS you previously used to create your SSH public key
@@ -85,4 +94,4 @@ Then select "Build your own template".
     * __Custom Script Account name__: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
     * __Custom Script Account Key__: the primary key of the storage account.
 
-* Check the "I agree to the terms and conditions" checkbox, and click on Purchase.
+* Check the "*I agree to the terms and conditions*" checkbox, and click on __Purchase__. Your DockerEE service will then be deployed in Azure. Count approximately 20 minutes to complete.
