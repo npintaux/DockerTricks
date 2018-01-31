@@ -28,31 +28,31 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 
 * To install Docker EE, you will need a link to the download image as well as a license key. These can be found on the Docker web site once you sign up for a 1-month trial. In order to do so, follow the instructions below:
 
-** Navigate to Docker trial page: https://store.docker.com/editions/enterprise/docker-ee-trial. Click on the "Start 1-Month Trial" button.
-![Screen capture](images/DockerEE_Start_a_trial.png?raw=true)
+    * Navigate to Docker trial page: https://store.docker.com/editions/enterprise/docker-ee-trial. Click on the "Start 1-Month Trial" button.
+    ![Screen capture](images/DockerEE_Start_a_trial.png?raw=true)
 
-** Follow the registration process to enroll in the trial. The following page should then appear.
-![Screen capture](images/DockerEE_Download_license_and_url.png?raw=true)
+    * Follow the registration process to enroll in the trial. The following page should then appear.
+    ![Screen capture](images/DockerEE_Download_license_and_url.png?raw=true)
 
-** Download the license key, and copy the software download URL for later use.
+    * Download the license key, and copy the software download URL for later use.
 
 * Create a storage account to store the custom scripts
-** Go to the Azure market place, and search for 'storage'. Select "storage account - blob, file, table, queue".
-![Screen capture](images/DockerEE_create_storage_account.png?raw=true)
+    * Go to the Azure market place, and search for 'storage'. Select "storage account - blob, file, table, queue".
+    ![Screen capture](images/DockerEE_create_storage_account.png?raw=true)
 
-** Provide a unique name (in lower case) and select/create a resource group. You can keep the other settings as default. Click on "Create".
+    * Provide a unique name (in lower case) and select/create a resource group. You can keep the other settings as default. Click on "Create".
 
-** Once your storage account is created, click on "Blobs".
-![Screen capture](images/DockerEE_create_container.png?raw=true)
+    * Once your storage account is created, click on "Blobs".
+    ![Screen capture](images/DockerEE_create_container.png?raw=true)
 
-** Create a container and name it "dockerinstall" (all lower case).
-![Screen capture](images/DockerEE_dockerinstall.png?raw=true)
+    * Create a container and name it "dockerinstall" (all lower case).
+    ![Screen capture](images/DockerEE_dockerinstall.png?raw=true)
 
-** Use "Azure Storage Explorer" tool to upload the custom scripts (located in the CustomScripts folder in this repository) in the "dockerinstall" container.
+* Use "Azure Storage Explorer" tool to upload the custom scripts (located in the CustomScripts folder in this repository) in the "dockerinstall" container.
 
-** Use "Azure Storage Explorer" tool to upload the Docker EE License Key to the same container. This key is necessary for the installation to succeed.
+* Use "Azure Storage Explorer" tool to upload the Docker EE License Key to the same container. This key is necessary for the installation to succeed.
 
-** Use "Azure Storage Explorer" tool to retrieve the Primary Key of your newly created storage account. You will need this key to fill the template information.
+* Use "Azure Storage Explorer" tool to retrieve the Primary Key of your newly created storage account. You will need this key to fill the template information.
 
 * create a storage account to store the logs and diagnostics. Mark down the name of this storage account as you will need it to modify your template.
 
@@ -71,23 +71,18 @@ Then select "Build your own template".
 ![Screen capture](images/DockerEE_Build_Template.png?raw=true)
 
 * Click on "Load File", and select the "StephW-DockerInfra-Azure-Share.json". In the editor, you will need to replace the "automateclouddiag" string (CTRL+F to search in the editor) with the name of the storage account your created for logs and diagnostics.
-
 ![Screen capture](images/DockerEE_Modify_Template.png?raw=true)
 
 * Click on "Save". You should obtain the following screen.
 ![Screen capture](images/DockerEE_Customized_Template.png?raw=true)
 
-** Cluster Public IP Address label: name of the DNS you previously used to create your SSH public key
-** Linux and Windows worker count: select from 1 to 5 nodes. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
-** Manager and Worker VM Sizes: select the appropriate sizes for your VMs. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
-** Admin UserId/Password: need to match the admin and password you provided when creating the SSH key.
-** Docker EE Download URL: this URL is the one you copied from the Docker EE Trial registration page.
-** SSH Public Key: the public key you generated in the Prerequisites section.
-** Custom Script Account name: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
-** Custom Script Account Key: the primary key of the storage account.
+    * __Cluster Public IP Address label__: name of the DNS you previously used to create your SSH public key
+    * __Linux and Windows worker count__: select from 1 to 5 nodes. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
+    * __Manager and Worker VM Sizes__: select the appropriate sizes for your VMs. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
+    * __Admin UserId/Password__: need to match the admin and password you provided when creating the SSH key.
+    * __Docker EE Download URL__: this URL is the one you copied from the Docker EE Trial registration page.
+    * __SSH Public Key__: the public key you generated in the Prerequisites section.
+    * __Custom Script Account name__: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
+    * __Custom Script Account Key__: the primary key of the storage account.
 
 * Check the "I agree to the terms and conditions" checkbox, and click on Purchase.
-
- 
-
-
