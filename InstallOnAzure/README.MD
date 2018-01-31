@@ -94,4 +94,4 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
     * __Custom Script Account name__: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
     * __Custom Script Account Key__: the primary key of the storage account.
 
-* Check the "*I agree to the terms and conditions*" checkbox, and click on __Purchase__. Your DockerEE service will then be deployed in Azure. Count approximately 20 minutes to complete.
+* Check the "I agree to the terms and conditions" checkbox, and click on __Purchase__. Your DockerEE service will then be deployed in Azure. Count approximately 20 minutes to complete.
