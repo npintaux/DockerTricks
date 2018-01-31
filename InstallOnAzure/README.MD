@@ -85,13 +85,13 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 
 ![Screen capture](images/DockerEE_Customized_Template.png?raw=true)
 
-    * __Cluster Public IP Address label__: name of the DNS you previously used to create your SSH public key
-    * __Linux and Windows worker count__: select from 1 to 5 nodes. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
-    * __Manager and Worker VM Sizes__: select the appropriate sizes for your VMs. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
-    * __Admin UserId/Password__: need to match the admin and password you provided when creating the SSH key.
-    * __Docker EE Download URL__: this URL is the one you copied from the Docker EE Trial registration page.
-    * __SSH Public Key__: the public key you generated in the Prerequisites section.
-    * __Custom Script Account name__: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
-    * __Custom Script Account Key__: the primary key of the storage account.
+    * Cluster Public IP Address label: name of the DNS you previously used to create your SSH public key
+    * Linux and Windows worker count: select from 1 to 5 nodes. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
+    * Manager and Worker VM Sizes: select the appropriate sizes for your VMs. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
+    * Admin UserId/Password: need to match the admin and password you provided when creating the SSH key.
+    * Docker EE Download URL: this URL is the one you copied from the Docker EE Trial registration page.
+    * SSH Public Key: the public key you generated in the Prerequisites section.
+    * Custom Script Account name: the name of the storage account you created to store the Custom Scripts. Please note that this is the name of the storage account, and not the name of the container ('dockerinstall').
+    * Custom Script Account Key: the primary key of the storage account.
 
 * Check the "I agree to the terms and conditions" checkbox, and click on __Purchase__. Your DockerEE service will then be deployed in Azure. Count approximately 20 minutes to complete.
