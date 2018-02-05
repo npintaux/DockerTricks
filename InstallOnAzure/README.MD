@@ -106,6 +106,6 @@ The steps outlined previously installed an official version of DockerEE, but wit
 * For a production-ready system, you will therefore need to replace the installed certificates by proper CA-signed certificates.
 * For demo and test purposes, it is possible to trick the docker client by replacing its local certificate. To do, copy the "utilities/copy_certs.sh" on the client you want to modify and run the following command:
 
-    {
+    ```
         . /copy_certs.sh <dtr_fqdn>
-    }
+    ```
