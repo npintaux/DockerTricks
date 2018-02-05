@@ -26,6 +26,10 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 ## Prerequisites
 * In order to facilitate the upload of the Azure Custom Scripts in Azure storage, it is recommended to use the "Azure Storage Explorer" tool: https://azure.microsoft.com/en-us/features/storage-explorer/
 
+* If you need a separate environment to install the development tools, please go to the Azure Marketplace and install a VM with "Visual Studio Enterprise 2017 (latest release) on Windows 2016 (x64)".
+
+    ![Screen capture](images/DockerEE_createVMWindowsServer.png?raw=true)
+
 * To install Docker EE, you will need a link to the download image as well as a license key. These can be found on the Docker web site once you sign up for a 1-month trial. In order to do so, follow the instructions below:
 
     * Navigate to Docker trial page: https://store.docker.com/editions/enterprise/docker-ee-trial. Click on the "Start 1-Month Trial" button.
@@ -71,19 +75,19 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 ## Installing Docker EE in Azure
 * The easiest way yo deploy this template, once the custom scripts are available and accessibe somewhere, is to use the Azure portal and search for "Template Deployment" in the MarketPlace. Click on "Create".
 
-![Screen capture](images/DockerEE_Template_Deployment.png?raw=true)
+    ![Screen capture](images/DockerEE_Template_Deployment.png?raw=true)
 
     Then select "Build your own template".
 
-![Screen capture](images/DockerEE_Build_Template.png?raw=true)
+    ![Screen capture](images/DockerEE_Build_Template.png?raw=true)
 
 * Click on "Load File", and select the "StephW-DockerInfra-Azure-Share.json". In the editor, you will need to replace the "automateclouddiag" string (CTRL+F to search in the editor) with the name of the storage account your created for logs and diagnostics.
 
-![Screen capture](images/DockerEE_Modify_Template.png?raw=true)
+    ![Screen capture](images/DockerEE_Modify_Template.png?raw=true)
 
 * Click on "Save". You should obtain the following screen.
 
-![Screen capture](images/DockerEE_Customized_Template.png?raw=true)
+    ![Screen capture](images/DockerEE_Customized_Template.png?raw=true)
 
     * Cluster Public IP Address label: name of the DNS you previously used to create your SSH public key
     * Linux and Windows worker count: select from 1 to 5 nodes. Please note that you may exceed your subscription quota if your account is not sufficiently provisioned.
@@ -95,3 +99,13 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
     * Custom Script Account Key: the primary key of the storage account.
 
 * Check the "I agree to the terms and conditions" checkbox, and click on __Purchase__. Your DockerEE service will then be deployed in Azure. Count approximately 20 minutes to complete.
+
+## Post-Installation Steps
+The steps outlined previously installed an official version of DockerEE, but with self-signed certificates. A typical docker client (such as Docker CE) will deny connection to the DTR because the server cannot be trusted.
+
+* For a production-ready system, you will therefore need to replace the installed certificates by proper CA-signed certificates.
+* For demo and test purposes, it is possible to trick the docker client by replacing its local certificate. To do, copy the "utilities/copy_certs.sh" on the client you want to modify and run the following command:
+
+    {
+        . /copy_certs.sh <dtr_fqdn>
+    }
