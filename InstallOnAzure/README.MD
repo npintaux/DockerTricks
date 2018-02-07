@@ -3,6 +3,11 @@ title: Docker Enterprise Azure Installer
 description: All necessary scripts and ARM templates to deploy a fully functional Docker Enterprise cluster on Microsoft Azure. The ARM template deploys 1 UCP controller, 1 DTR server, up to 5 linux workers, and up to 5 windows workers. Everything is deployed and configured automatically. The end of the deployment is a fully functional cluster.
 keywords: docker, datacenter, install, orchestration, management, azure, swarm, microsoft, windows
 ---
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnpintaux%2FDockerTricks%2FInstallOnAzure%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
 # Introduction
 
 * This is an Azure ARM template to automatically deploy a Docker Enterprise cluster on Azure. The cluster comes out fully configured and running.
