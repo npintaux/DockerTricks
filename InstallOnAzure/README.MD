@@ -4,7 +4,7 @@ description: All necessary scripts and ARM templates to deploy a fully functiona
 keywords: docker, datacenter, install, orchestration, management, azure, swarm, microsoft, windows
 ---
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnpintaux%2FDockerTricks%2FInstallOnAzure%2Fazuredeploy.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fnpintaux%2FDockerTricks%2Fmaster%2FInstallOnAzure%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
