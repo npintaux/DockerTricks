@@ -38,60 +38,56 @@
                 "description": "The size of the created Manager machines"
             }
         },
-                "workerVMSize": {
-                    "type": "string",
-                    "defaultValue": "Standard_B4ms",
-                    "allowedValues": [
-                      "Standard_D2s_v3", "Standard_D4s_v3",
-                      "Standard_B2ms", "Standard_B4ms", "Standard_D8s_v3",
-                      "Standard_A2_v2", "Standard_A4_v2",
-                      "Standard_D2_v3", "Standard_D4_v3", "Standard_D8_v3",
-                      "Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3"
-                    ],
-                    "metadata": {
-                        "description": "The size of the worker machines"
-                      }
-                },
-
-            "AdminUserid": {
+        "workerVMSize": {
+            "type": "string",
+            "defaultValue": "Standard_B4ms",
+            "allowedValues": [
+                "Standard_D2s_v3", "Standard_D4s_v3",
+                "Standard_B2ms", "Standard_B4ms", "Standard_D8s_v3",
+                "Standard_A2_v2", "Standard_A4_v2",
+                "Standard_D2_v3", "Standard_D4_v3", "Standard_D8_v3",
+                "Standard_D2s_v3", "Standard_D4s_v3", "Standard_D8s_v3"
+            ],
+            "metadata": {
+                "description": "The size of the worker machines"
+            }
+        },
+        "AdminUserid": {
             "type": "string",
             "metadata": {
                 "description": "UserID of the virtual machines admin"
             }
         },
-
         "AdminPassword": {
             "type": "securestring",
             "metadata": {
                 "description": "Admin password of Windows Workers"
             }
         },
-
         "dockerEEDownloadURL": {
              "type": "string",
              "metadata": {
                    "description": "Location from where to Download Docker EE (Found in Docker Store)"
                          }
         },
-
         "sshPublicKey": {
             "type": "string",
             "metadata": {
                 "description": "The SSH public key used to authenticate with the created swarm. Usually available in $HOME/.ssh/id_rsa.pub file"
             }
         },
-    "customScriptStorageAccountName": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of storage account where scripts are stored into the dockerinstall container"
-      }
-    },
-    "customScriptStorageAccountKey": {
-      "type": "string",
-      "metadata": {
-        "description": "The access key of the storage account."
-      }
-    }
+        "customScriptStorageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of storage account where scripts are stored into the dockerinstall container"
+            }
+        },
+        "customScriptStorageAccountKey": {
+            "type": "string",
+            "metadata": {
+                "description": "The access key of the storage account."
+            }
+        }
     },
     "variables": {
 
@@ -104,6 +100,8 @@
         "apiVersion": "2016-03-30",
 
         "storageAccountName": "[concat('storage', uniqueString(resourceGroup().id))]",
+        "logStorageAccountName": "[concat('logstorage', uniqueString(resourceGroup().id))]",
+        "logStorageUri": "[concat('https://', variables('logStorageAccountName'), '.blob.core.windows.net')]",
 
         "virtualNetworkName": "clusterVirtualNetwork",
         "vnetID": "[resourceId('Microsoft.Network/virtualNetworks', variables('virtualNetworkName'))]",
@@ -161,174 +159,200 @@
 
     "resources": [
 
-      {
-                  "apiVersion": "2017-10-01",
-                  "name": "[variables('storageAccountName')]",
-                  "location": "[variables('resourceGroupLocation')]",
-                  "type": "Microsoft.Storage/storageAccounts",
-                  "sku": { "name": "Standard_LRS" },
-                  "kind": "StorageV2",
-                  "properties": {
-                      "supportsHttpsTrafficOnly": "false",
-                      "accessTier": "Hot",
-                      "encryption": {
-                          "services": {
-                              "blob": { "enabled": true },
-                              "file": { "enabled": true }
-                          },
-                          "keySource": "Microsoft.Storage"
-                      }
-                  },
-                  "dependsOn": []
-              },
-
-
-      {
-        "comments": "Cluster Virtual Network",
-        "apiVersion": "[variables('apiVersion')]",
-        "type": "Microsoft.Network/virtualNetworks",
-        "name": "[variables('virtualNetworkName')]",
-        "location": "[variables('resourceGroupLocation')]",
-        "properties":
-            {
-            "addressSpace": {
-              "addressPrefixes": [
-                  "10.0.0.0/16"
-              ]
-            },
-        "subnets": [
-                {
-                    "name": "ucp",
-                    "properties": {
-                        "addressPrefix": "10.0.1.0/24"
-                    }
-                },
-                {
-                    "name": "dtr",
-                    "properties": {
-                        "addressPrefix": "10.0.2.0/24"
-                    }
-                },
-                {
-                    "name": "linuxworkers",
-                    "properties": {
-                        "addressPrefix": "10.0.3.0/24"
-                    }
-                },
-                {
-                    "name": "windowsworkers",
-                    "properties": {"addressPrefix": "10.0.4.0/24"}
-                }
-            ]
-        }
-},
-
-
-{
-    "comments": "UCP Availability Set",
-    "apiVersion": "2017-03-30",
-    "type": "Microsoft.Compute/availabilitySets",
-    "sku": {
-        "name": "Aligned"
-    },
-    "name": "[variables('ucpAvailabilitySetName')]",
-    "apiVersion": "2016-04-30-preview",
-    "location": "[variables('resourceGroupLocation')]",
-    "tags": {},
-    "scale": null,
-    "properties":
         {
-        "platformUpdateDomainCount": 3,
-        "platformFaultDomainCount": 3
-        }
-},
+            "apiVersion": "2017-10-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[variables('resourceGroupLocation')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": { "name": "Standard_LRS" },
+            "kind": "StorageV2",
+            "properties": {
+                "supportsHttpsTrafficOnly": "false",
+                "accessTier": "Hot",
+                "encryption": {
+                    "services": {
+                        "blob": { "enabled": true },
+                        "file": { "enabled": true }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "dependsOn": []
+        },
 
-{
-          "comments": "UCP Public IP address",
-          "type": "Microsoft.Network/publicIPAddresses",
-          "name": "[variables('ucpPublicIPAddressName')]",
-          "location": "[variables('resourceGroupLocation')]",
-          "apiVersion": "2017-03-01",
-          "scale": null,
-          "properties": {
-              "publicIPAllocationMethod": "Dynamic",
-              "idleTimeoutInMinutes": 4,
-              "dnsSettings": {
-                  "domainNameLabel": "[variables('ucpPublicIPAddressLabel')]"
-              }
-          }
-},
-
-
-{
-              "comments": "UCP Load Balancer",
-              "apiVersion": "[variables('apiVersion')]",
-              "name": "[variables('ucpLbName')]",
-              "type": "Microsoft.Network/loadBalancers",
-              "location": "[resourceGroup().location]",
-              "dependsOn": [
-                  "[concat('Microsoft.Network/publicIPAddresses/', variables('ucpPublicIPAddressName'))]"
-              ],
-              "properties": {
-                  "frontendIPConfigurations": [
-                      {
-                          "name": "LoadBalancerFrontEnd",
-                          "properties": {
-                              "publicIPAddress": {
-                                  "id" : "[resourceId('Microsoft.Network/publicIPAddresses', variables('ucpPublicIPAddressName'))]"
-                              }
-                          }
-                      }
-                  ],
-                  "backendAddressPools": [
-                      {
-                          "name": "BackendServersPool"
-                      }
-                  ],
-                  "probes": [
-                      {
-                          "name": "DockerDaemonProbe",
-                          "properties": {
-                              "protocol": "tcp",
-                              "port": 22,
-                              "intervalInSeconds": "10",
-                              "numberOfProbes": "2"
-                          }
-                      }
-                  ],
-                                    "loadBalancingRules": [
-                                        {
-                                            "name": "ucpGUI",
-                                            "properties": {
-                                                "frontendIPConfiguration": { "id": "[variables('ucpLbFrontEndIPConfigID')]" },
-                                                "frontendPort": 443,
-                                                "backendPort": 443,
-                                                "enableFloatingIP": false,
-                                                "idleTimeoutInMinutes": 4,
-                                                "protocol": "Tcp",
-                                                "loadDistribution": "Default",
-                                                "backendAddressPool": { "id": "[variables('ucpLbBackendAddressPoolID')]" },
-                                                "probe": { "id": "[variables('ucpLbProbeID')]" }
-                                            }
-                                        }
-                                    ],
-                  "inboundNatRules": [
-                    {
-                      "name": "ucpSSH",
-                      "properties": {
-                        "frontendIPConfiguration": {
-                          "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('ucpLbName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+        {
+            "apiVersion": "2017-10-01",
+            "name": "[variables('logStorageAccountName')]",
+            "location": "[variables('resourceGroupLocation')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "supportsHttpsTrafficOnly": "false",
+                "accessTier": "Hot",
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
                         },
-                        "protocol": "tcp",
-                        "frontendPort": 2222,
-                        "backendPort": 22,
-                        "enableFloatingIP": false
-                      }
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "dependsOn": []
+        },
+        
+        {
+            "comments": "Cluster Virtual Network",
+            "apiVersion": "[variables('apiVersion')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[variables('resourceGroupLocation')]",
+            "properties":
+                {
+                "addressSpace": {
+                "addressPrefixes": [
+                    "10.0.0.0/16"
+                ]
+                },
+            "subnets": [
+                    {
+                        "name": "ucp",
+                        "properties": {
+                            "addressPrefix": "10.0.1.0/24"
+                        }
+                    },
+                    {
+                        "name": "dtr",
+                        "properties": {
+                            "addressPrefix": "10.0.2.0/24"
+                        }
+                    },
+                    {
+                        "name": "linuxworkers",
+                        "properties": {
+                            "addressPrefix": "10.0.3.0/24"
+                        }
+                    },
+                    {
+                        "name": "windowsworkers",
+                        "properties": {"addressPrefix": "10.0.4.0/24"}
                     }
-                  ]
-              }
-},
+                ]
+            }
+        },
 
+        {
+            "comments": "UCP Availability Set",
+            "apiVersion": "2017-03-30",
+            "type": "Microsoft.Compute/availabilitySets",
+            "sku": {
+                "name": "Aligned"
+            },
+            "name": "[variables('ucpAvailabilitySetName')]",
+            "apiVersion": "2016-04-30-preview",
+            "location": "[variables('resourceGroupLocation')]",
+            "tags": {},
+            "scale": null,
+            "properties":
+                {
+                "platformUpdateDomainCount": 3,
+                "platformFaultDomainCount": 3
+                }
+        },
+
+        {
+            "comments": "UCP Public IP address",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('ucpPublicIPAddressName')]",
+            "location": "[variables('resourceGroupLocation')]",
+            "apiVersion": "2017-03-01",
+            "scale": null,
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('ucpPublicIPAddressLabel')]"
+                }
+            }
+        },
+
+
+        {
+            "comments": "UCP Load Balancer",
+            "apiVersion": "[variables('apiVersion')]",
+            "name": "[variables('ucpLbName')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                  "[concat('Microsoft.Network/publicIPAddresses/', variables('ucpPublicIPAddressName'))]"
+            ],
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id" : "[resourceId('Microsoft.Network/publicIPAddresses', variables('ucpPublicIPAddressName'))]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "BackendServersPool"
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "DockerDaemonProbe",
+                        "properties": {
+                            "protocol": "tcp",
+                            "port": 22,
+                            "intervalInSeconds": "10",
+                            "numberOfProbes": "2"
+                        }
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "ucpGUI",
+                        "properties": {
+                            "frontendIPConfiguration": { 
+                                "id": "[variables('ucpLbFrontEndIPConfigID')]" },
+                                "frontendPort": 443,
+                                "backendPort": 443,
+                                "enableFloatingIP": false,
+                                "idleTimeoutInMinutes": 4,
+                                "protocol": "Tcp",
+                                "loadDistribution": "Default",
+                                "backendAddressPool": { "id": "[variables('ucpLbBackendAddressPoolID')]" },
+                                "probe": { "id": "[variables('ucpLbProbeID')]" 
+                            }
+                        }
+                    }
+                ],
+                "inboundNatRules": [
+                    {
+                        "name": "ucpSSH",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[concat(resourceId('Microsoft.Network/loadBalancers',variables('ucpLbName')),'/frontendIPConfigurations/LoadBalancerFrontEnd')]"
+                            },
+                            "protocol": "tcp",
+                            "frontendPort": 2222,
+                            "backendPort": 22,
+                            "enableFloatingIP": false
+                        }
+                    }
+                ]
+            }
+        },
 
 {
   "comments": "Network Interface for the UCP server",
@@ -421,7 +445,7 @@
                   "diagnosticsProfile": {
                       "bootDiagnostics": {
                           "enabled": true,
-                          "storageUri": "https://automateclouddiag.blob.core.windows.net/"
+                          "storageUri": "[variables('logStorageUri')]"
                       }
                   }
               },
@@ -658,7 +682,7 @@
                   "diagnosticsProfile": {
                       "bootDiagnostics": {
                           "enabled": true,
-                          "storageUri": "https://automateclouddiag.blob.core.windows.net/"
+                          "storageUri": "[variables('logStorageUri')]"
                       }
                   }
               },
@@ -1088,7 +1112,7 @@
                       "diagnosticsProfile": {
                           "bootDiagnostics": {
                               "enabled": true,
-                              "storageUri": "https://automateclouddiag.blob.core.windows.net/"
+                              "storageUri": "[variables('logStorageUri')]"
                           }
                       }
                   },
@@ -1226,7 +1250,7 @@
                           "diagnosticsProfile": {
                               "bootDiagnostics": {
                                   "enabled": true,
-                                  "storageUri": "https://automateclouddiag.blob.core.windows.net/"
+                                  "storageUri": "[variables('logStorageUri')]"
                               }
                           }
                       },

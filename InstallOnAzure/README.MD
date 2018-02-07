@@ -78,7 +78,7 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
     Copy the public key by retrieving the content of ~/.ssh/id_rsa.pub.
 
 ## Installing Docker EE in Azure
-* The easiest way yo deploy this template, once the custom scripts are available and accessibe somewhere, is to use the Azure portal and search for "Template Deployment" in the MarketPlace. Click on "Create".
+* The easiest way yo deploy this template, once the custom scripts are available and accessibe somewhere, is to click on the "Deploy to Azure" button at the top of this page. Alternatively, you can use the Azure portal and search for "Template Deployment" in the MarketPlace. Then click on "Create".
 
     ![Screen capture](images/DockerEE_Template_Deployment.png?raw=true)
 
@@ -86,9 +86,7 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 
     ![Screen capture](images/DockerEE_Build_Template.png?raw=true)
 
-* Click on "Load File", and select the "StephW-DockerInfra-Azure-Share.json". In the editor, you will need to replace the "automateclouddiag" string (CTRL+F to search in the editor) with the name of the storage account your created for logs and diagnostics.
-
-    ![Screen capture](images/DockerEE_Modify_Template.png?raw=true)
+* Click on "Load File", and select the "azuredeploy.json" file. 
 
 * Click on "Save". You should obtain the following screen.
 
