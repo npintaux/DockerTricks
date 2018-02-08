@@ -68,8 +68,6 @@ keywords: docker, datacenter, install, orchestration, management, azure, swarm, 
 
 * Use "Azure Storage Explorer" tool to retrieve the Primary Key of your newly created storage account. You will need this key to fill the template information.
 
-* create a storage account to store the logs and diagnostics. Mark down the name of this storage account as you will need it to modify your template.
-
 * Last, you will need to provision a SSH key corresponding to a specific DNS name and admin. To do this, open a Linux shell, and type the following command:
     ```
     ssh-keygen -t rsa -b 2048 -C "admin_name@your_dnsname_name"
